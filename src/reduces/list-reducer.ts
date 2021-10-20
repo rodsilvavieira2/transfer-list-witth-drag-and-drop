@@ -1,5 +1,6 @@
 import { ListItemAttr } from '../@types'
-import { intersection, not } from '../util'
+import { intersection, isAllCheck, not, union } from '../util'
+import { sortListById } from '../util/sort-list-by-id'
 
 export type ListState = {
   left: ListItemAttr[]
@@ -34,7 +35,6 @@ export type ListActions =
       type: 'handle-toggle'
       payload: {
         item: ListItemAttr
-        side: Side
       }
     }
   | {
@@ -42,6 +42,12 @@ export type ListActions =
       payload: {
         id: number
         side: Side
+      }
+    }
+  | {
+      type: 'toggle-all'
+      payload: {
+        items: ListItemAttr[]
       }
     }
 
@@ -76,30 +82,39 @@ export const listReducer = (
       }
 
       case 'handle-toggle': {
-        const { checked, left, right } = state
-        const { item, side } = action.payload
+        const { checked } = state
+        const { item } = action.payload
 
-        const checkItem = (side: ListItemAttr[]) => {
-          const itemIndex = side.indexOf(item)
+        const itemIndex = checked.indexOf(item)
 
-          if (itemIndex > -1) {
-            return {
-              ...state,
-              checked: checked.filter((lisItem) => lisItem.id !== item.id)
-            }
-          }
-
+        if (itemIndex > -1) {
           return {
             ...state,
-            checked: [...checked, item]
+            checked: checked.filter((lisItem) => lisItem.id !== item.id)
           }
         }
 
-        if (side === 'left') {
-          return checkItem(left)
+        return {
+          ...state,
+          checked: [...checked, item]
+        }
+      }
+
+      case 'toggle-all': {
+        const { items } = action.payload
+        const { checked } = state
+
+        if (intersection(checked, items).length === items.length) {
+          return {
+            ...state,
+            checked: not(checked, items)
+          }
         }
 
-        return checkItem(right)
+        return {
+          ...state,
+          checked: union(checked, items)
+        }
       }
 
       case 'handle-drop-item': {
@@ -146,13 +161,19 @@ export const listReducer = (
 
   const { left, right, checked } = newState
 
-  const isAllRightChecked = intersection(right, checked).length === right.length
+  const rightChecked = intersection(right, checked)
 
-  const isAllLeftChecked = intersection(left, checked).length === left.length
+  const leftChecked = intersection(left, checked)
+
+  const notSortItemsOn = ['handle-toggle', 'toggle-all']
 
   return {
     ...newState,
-    isAllLeftChecked,
-    isAllRightChecked
+    isAllLeftChecked: isAllCheck(leftChecked, left),
+    isAllRightChecked: isAllCheck(rightChecked, right),
+    left: notSortItemsOn.includes(action.type) ? left : sortListById(left),
+    right: notSortItemsOn.includes(action.type) ? right : sortListById(right),
+    leftChecked,
+    rightChecked
   }
 }

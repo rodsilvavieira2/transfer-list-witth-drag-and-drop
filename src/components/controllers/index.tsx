@@ -1,27 +1,33 @@
+import { Dispatch } from 'react'
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md'
+import { ListActions } from '../../reduces'
 import { Container } from './styles'
 
 type ControllersProps = {
-  onMoveToRight: () => void
-  onMoveToLeft: () => void
+  dispatch: Dispatch<ListActions>
 }
 
-export const Controllers = ({
-  onMoveToLeft,
-  onMoveToRight
-}: ControllersProps) => {
+export const Controllers = ({ dispatch }: ControllersProps) => {
   return (
     <Container>
       <button
         aria-label="move all items checked for the right"
-        onClick={onMoveToRight}
+        onClick={() =>
+          dispatch({
+            type: 'move-to-right'
+          })
+        }
       >
         <MdKeyboardArrowRight />
       </button>
 
       <button
         aria-label="move all items checked for the left"
-        onClick={onMoveToLeft}
+        onClick={() =>
+          dispatch({
+            type: 'move-to-left'
+          })
+        }
       >
         <MdKeyboardArrowLeft />
       </button>

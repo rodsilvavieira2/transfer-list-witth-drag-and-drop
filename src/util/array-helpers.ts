@@ -11,3 +11,7 @@ export const intersection = (a: ListItemAttr[], b: ListItemAttr[]) => {
 export const union = (a: ListItemAttr[], b: ListItemAttr[]) => {
   return [...a, ...not(b, a)]
 }
+
+export const isAllCheck = (checked: ListItemAttr[], items: ListItemAttr[]) => {
+  return checked.length === items.length && items.length !== 0
+}

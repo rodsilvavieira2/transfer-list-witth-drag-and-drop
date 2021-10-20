@@ -1,6 +1,7 @@
-import { DragEvent } from 'react'
+import { Dispatch, DragEvent } from 'react'
 
 import { ListItemAttr } from '../../@types'
+import { ListActions } from '../../reduces'
 import { RadioInput } from '../form'
 import { ListItem } from './list-item'
 import { Container, Header, ListItems } from './styles'
@@ -11,10 +12,9 @@ type ListPops = {
   maxHeight: string | number
   isAllItemChecked: boolean
   isPartialChecked: boolean
-  onRequestToggleAll: () => void
-  handleToggle: (item: ListItemAttr) => void
   checked: ListItemAttr[]
-  onTransferItem: (id: number) => void
+  dispatch: Dispatch<ListActions>
+  onDropItem: (id: number) => void
 }
 
 export const List = ({
@@ -22,10 +22,9 @@ export const List = ({
   listItems,
   isAllItemChecked,
   isPartialChecked,
-  onRequestToggleAll,
   checked,
-  handleToggle,
-  onTransferItem
+  dispatch,
+  onDropItem
 }: ListPops) => {
   const handleDragHover = (e: DragEvent) => {
     e.preventDefault()
@@ -42,7 +41,7 @@ export const List = ({
 
     if (resultIndex) {
       if (resultIndex.length > 1) {
-        onTransferItem(Number(resultIndex[1]))
+        onDropItem(Number(resultIndex[1]))
       }
     }
   }
@@ -53,7 +52,15 @@ export const List = ({
         <RadioInput
           isAllChecked={isAllItemChecked}
           isPartialChecked={isPartialChecked}
-          onClick={onRequestToggleAll}
+          disabled={listItems.length === 0}
+          onClick={() =>
+            dispatch({
+              type: 'toggle-all',
+              payload: {
+                items: listItems
+              }
+            })
+          }
         />
 
         <span>{header}</span>
@@ -69,7 +76,14 @@ export const List = ({
             key={item.id}
             {...item}
             isChecked={checked.indexOf(item) !== -1}
-            onChangeChecked={() => handleToggle(item)}
+            onChangeChecked={() =>
+              dispatch({
+                type: 'handle-toggle',
+                payload: {
+                  item
+                }
+              })
+            }
           />
         ))}
       </ListItems>
