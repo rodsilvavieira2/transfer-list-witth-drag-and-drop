@@ -38,14 +38,13 @@ export const List = ({
 
     const textHtml = e.dataTransfer.getData('text/html')
 
-    const element = document.createElement('div')
-    element.innerHTML = textHtml
+    const resultIndex = textHtml.match(/data-id="([0-9]+)/)
 
-    const labelElement = element.querySelector('label')
-
-    const id = labelElement?.getAttribute('data-id')
-
-    if (id) onTransferItem(Number(id))
+    if (resultIndex) {
+      if (resultIndex.length > 1) {
+        onTransferItem(Number(resultIndex[1]))
+      }
+    }
   }
 
   return (

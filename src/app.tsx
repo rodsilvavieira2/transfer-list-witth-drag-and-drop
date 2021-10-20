@@ -3,7 +3,7 @@ import { ListItemAttr } from './@types'
 import { List, Container, ListContainer } from './components'
 import { Controllers } from './components/controllers'
 
-const listItem = Array.from({ length: 10 }).map((_, index) => ({
+const listItem = Array.from({ length: 12 }).map((_, index) => ({
   id: index + 1,
   text: `list item ${index + 1}`,
   isChecked: false
