@@ -76,6 +76,24 @@ export const App = () => {
     setChecked(not(checked, rightChecked))
   }, [checked, left, right, rightChecked])
 
+  const transferItem = (id: number, side: 'left' | 'right') => {
+    if (side === 'left') {
+      const itemIndex = right.findIndex((item) => item.id === id)
+
+      const rightItem = right[itemIndex]
+
+      setLeft([...left, rightItem])
+      setRight(not(right, [rightItem]))
+    } else {
+      const itemIndex = left.findIndex((item) => item.id === id)
+
+      const leftItem = left[itemIndex]
+
+      setRight([...right, leftItem])
+      setLeft(not(left, [leftItem]))
+    }
+  }
+
   return (
     <Container>
       <ListContainer>
@@ -86,6 +104,7 @@ export const App = () => {
           checked={checked}
           handleToggle={handleToggle}
           onRequestToggleAll={() => handleToggleAll(left)}
+          onTransferItem={(id) => transferItem(id, 'left')}
           isAllItemChecked={
             numberOfChecked(left) === left.length && left.length !== 0
           }
@@ -106,6 +125,7 @@ export const App = () => {
           checked={checked}
           handleToggle={handleToggle}
           onRequestToggleAll={() => handleToggleAll(right)}
+          onTransferItem={(id) => transferItem(id, 'right')}
           isAllItemChecked={
             numberOfChecked(right) === right.length && right.length !== 0
           }

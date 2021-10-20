@@ -1,3 +1,5 @@
+import { DragEvent } from 'react'
+
 import { ListItemAttr } from '../../@types'
 import { RadioInput } from '../form'
 import { ListItem } from './list-item'
@@ -12,6 +14,7 @@ type ListPops = {
   onRequestToggleAll: () => void
   handleToggle: (item: ListItemAttr) => void
   checked: ListItemAttr[]
+  onTransferItem: (id: number) => void
 }
 
 export const List = ({
@@ -21,8 +24,30 @@ export const List = ({
   isPartialChecked,
   onRequestToggleAll,
   checked,
-  handleToggle
+  handleToggle,
+  onTransferItem
 }: ListPops) => {
+  const handleDragHover = (e: DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDragDrop = (e: DragEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    const textHtml = e.dataTransfer.getData('text/html')
+
+    const element = document.createElement('div')
+    element.innerHTML = textHtml
+
+    const labelElement = element.querySelector('label')
+
+    const id = labelElement?.getAttribute('data-id')
+
+    if (id) onTransferItem(Number(id))
+  }
+
   return (
     <Container>
       <Header>
@@ -35,7 +60,11 @@ export const List = ({
         <span>{header}</span>
       </Header>
 
-      <ListItems role="list">
+      <ListItems
+        role="list"
+        onDragOver={handleDragHover}
+        onDrop={handleDragDrop}
+      >
         {listItems.map((item) => (
           <ListItem
             key={item.id}
