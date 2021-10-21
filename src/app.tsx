@@ -8,7 +8,6 @@ import { intersection } from './util'
 const listItems = Array.from({ length: 10 }).map((_, index) => ({
   id: index + 1,
   text: `list item ${index + 1}`,
-  isChecked: false
 }))
 
 export const App = () => {

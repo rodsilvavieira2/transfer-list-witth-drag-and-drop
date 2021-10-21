@@ -19,7 +19,7 @@ export const Header = styled.header`
   justify-content: space-between;
 
   padding: 1rem 1.7rem;
-  background-color: #9f7aea;
+  background-color: ${(props) => props.theme.colors.primary};
   color: #ffff;
   font-weight: 500;
 
@@ -54,8 +54,24 @@ export const ListItems = styled.ul<ListItemsProps>`
   min-height: 15rem;
 
   scrollbar-width: thin;
-  scrollbar-color: #9f7aea transparent;
+  scrollbar-color: ${(props) => props.theme.colors.primary} transparent;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${(props) => props.theme.colors.primary};
+    border-radius: 0.5rem;
+  }
 
   border: 2px dotted
-    ${(props) => (props.isReadyToDrop ? '#9f7aea' : 'transparent')};
+    ${(props) =>
+      props.isReadyToDrop
+        ? (props) => props.theme.colors.primary
+        : 'transparent'};
 `

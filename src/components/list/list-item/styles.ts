@@ -12,7 +12,7 @@ export const Container = styled.li<ContainerProps>`
     align-items: center;
     padding: 0 1.7rem;
     width: 100%;
-    min-height: 3.5rem;
+    min-height: 3.2rem;
     cursor: pointer;
 
     transition: all 0.3s;
