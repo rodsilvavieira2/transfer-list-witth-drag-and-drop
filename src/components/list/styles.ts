@@ -40,7 +40,11 @@ export const Header = styled.header`
 
   overflow: hidden;
 `
-export const ListItems = styled.ul`
+type ListItemsProps = {
+  isReadyToDrop: boolean
+}
+
+export const ListItems = styled.ul<ListItemsProps>`
   padding: 1rem 0;
   overflow-y: auto;
 
@@ -48,7 +52,10 @@ export const ListItems = styled.ul`
 
   max-height: 15rem;
   min-height: 15rem;
-  
+
   scrollbar-width: thin;
   scrollbar-color: #9f7aea transparent;
+
+  border: 2px dotted
+    ${(props) => (props.isReadyToDrop ? '#9f7aea' : 'transparent')};
 `

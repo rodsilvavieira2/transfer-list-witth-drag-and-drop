@@ -32,42 +32,24 @@ export const App = () => {
       <ListContainer>
         <List
           header="Choices"
-          maxHeight={'10rem'}
           listItems={left}
           checked={checked}
           dispatch={dispatch}
           isAllItemChecked={isAllLeftChecked}
           isPartialChecked={!isAllLeftChecked && numberOfChecked(left) !== 0}
-          onDropItem={(id) =>
-            dispatch({
-              type: 'handle-drop-item',
-              payload: {
-                id,
-                side: 'left'
-              }
-            })
-          }
+          position="left"
         />
 
         <Controllers dispatch={dispatch} />
 
         <List
           header="Chosen"
-          maxHeight={'10rem'}
           listItems={right}
           checked={checked}
           dispatch={dispatch}
           isAllItemChecked={isAllRightChecked}
           isPartialChecked={!isAllRightChecked && numberOfChecked(right) !== 0}
-          onDropItem={(id) =>
-            dispatch({
-              type: 'handle-drop-item',
-              payload: {
-                id,
-                side: 'right'
-              }
-            })
-          }
+          position="right"
         />
       </ListContainer>
     </Container>

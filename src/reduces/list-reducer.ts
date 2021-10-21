@@ -50,6 +50,14 @@ export type ListActions =
         items: ListItemAttr[]
       }
     }
+  | {
+      type: 'change-order'
+      payload: {
+        fromId: number
+        toId: number
+        position: Side
+      }
+    }
 
 export const listReducer = (
   state: ListState,
@@ -97,6 +105,39 @@ export const listReducer = (
         return {
           ...state,
           checked: [...checked, item]
+        }
+      }
+
+      case 'change-order': {
+        const { fromId, toId, position } = action.payload
+
+        const reorder = (side: ListItemAttr[]) => {
+          const existsOnThisSide = side.some((item) => item.id === fromId)
+
+          if (!existsOnThisSide) {
+            return state[position]
+          }
+
+          const result = side.map((item) => {
+            if (item.id === fromId) {
+              item.id = toId
+              return item
+            }
+
+            if (item.id === toId) {
+              item.id = fromId
+              return item
+            }
+
+            return item
+          })
+
+          return result
+        }
+
+        return {
+          ...state,
+          [position]: reorder(state[position])
         }
       }
 

@@ -1,4 +1,4 @@
-import { Dispatch, DragEvent } from 'react'
+import { Dispatch, DragEvent, useCallback, useState } from 'react'
 
 import { ListItemAttr } from '../../@types'
 import { ListActions } from '../../reduces'
@@ -8,13 +8,12 @@ import { Container, Header, ListItems } from './styles'
 
 type ListPops = {
   header: string
+  position: 'left' | 'right'
   listItems: ListItemAttr[]
-  maxHeight: string | number
   isAllItemChecked: boolean
   isPartialChecked: boolean
   checked: ListItemAttr[]
   dispatch: Dispatch<ListActions>
-  onDropItem: (id: number) => void
 }
 
 export const List = ({
@@ -24,8 +23,10 @@ export const List = ({
   isPartialChecked,
   checked,
   dispatch,
-  onDropItem
+  position
 }: ListPops) => {
+  const [isReadyToDrop, setIsReadyToDrop] = useState(false)
+
   const handleDragHover = (e: DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -35,16 +36,34 @@ export const List = ({
     e.stopPropagation()
     e.preventDefault()
 
-    const textHtml = e.dataTransfer.getData('text/html')
+    setIsReadyToDrop(false)
 
-    const resultIndex = textHtml.match(/data-id="([0-9]+)/)
+    const id = e.dataTransfer.getData('text')
 
-    if (resultIndex) {
-      if (resultIndex.length > 1) {
-        onDropItem(Number(resultIndex[1]))
-      }
+    if (id) {
+      dispatch({
+        type: 'handle-drop-item',
+        payload: {
+          id: Number(id),
+          side: position
+        }
+      })
     }
   }
+
+  const handleDropItem = useCallback(
+    (from: number, to: number) => {
+      dispatch({
+        type: 'change-order',
+        payload: {
+          fromId: from,
+          toId: to,
+          position
+        }
+      })
+    },
+    [dispatch, position]
+  )
 
   return (
     <Container>
@@ -70,11 +89,14 @@ export const List = ({
         role="list"
         onDragOver={handleDragHover}
         onDrop={handleDragDrop}
+        isReadyToDrop={isReadyToDrop}
+        onDragEnter={() => setIsReadyToDrop(true)}
+        onDragLeave={() => setIsReadyToDrop(false)}
       >
         {listItems.map((item) => (
           <ListItem
-            key={item.id}
             {...item}
+            key={item.id}
             isChecked={checked.indexOf(item) !== -1}
             onChangeChecked={() =>
               dispatch({
@@ -84,6 +106,7 @@ export const List = ({
                 }
               })
             }
+            onDrop={handleDropItem}
           />
         ))}
       </ListItems>
